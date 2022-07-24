@@ -25,7 +25,8 @@
   ],
   "keywords": [
     "sabl",
-    "db"
+    "async",
+    "promise"
   ],
   "license": "MIT",
   "dependencies": {

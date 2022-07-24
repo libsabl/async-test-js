@@ -136,7 +136,7 @@ async function validateVersion(pkgv) {
   // Render tsconfig
   console.log(chalk.cyanBright('  Rendering tsconfig.json'));
   const { stdout: tsconfig } = await exec(
-    'pnpx tsc --project ./tsconfig.build.json --showConfig ',
+    'npx tsc --project ./tsconfig.build.json --showConfig ',
     { cwd: pkgpath.root }
   );
   await fs.writeFile(pubpath('tsconfig.json'), tsconfig, 'utf8');
