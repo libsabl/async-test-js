@@ -18,8 +18,101 @@ See [SETUP.md](./docs/SETUP.md), [CONFIG.md](./docs/CONFIG.md).
 
 ## API
  
+- [`promise`](#promise)
 - [`later`](#later)
  
+### `promise`
+
+```ts
+function promise<T>(): CallbackPromise<T>;
+
+interface CallbackPromise<T> extends Promise<T> {
+  resolve(value: T | PromiseLike<T>): void;
+  reject(reason: unknown): void;
+} 
+```
+
+`promise` returns an actual [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) which also exposes its own `resolve` and `reject` callbacks. This is very helpful for bridging or wrapping event- and callback-based programs to expose APIs as simple Promises that can be `awaited`. In particular, it allows queued requests to be resolved as promises.
+
+#### **Example**: an async queue.
+
+```ts
+class AsyncQueue<T> {
+  readonly #itemQueue: T[] = [];
+  readonly #reqQueue: CallbackPromise<T>[] = [];
+
+  // Await the next value available in the queue
+  get(): Promise<T> {
+    if(this.#itemQueue.length > 0) {
+      return Promise.resolve(this.#itemQueue.shift());
+    }
+
+    const p = promise<T>();
+    this.#reqQueue.push(p);
+    return p;
+  }
+
+  // Put an item in the queue
+  put(item: T): void {
+    if(this.#reqQueue.length > 0) {
+      this.#reqQueue.shift().resolve(item);
+      return;
+    }
+    this.#itemQueue.push(item);
+  }
+}
+```
+
+### Cancelable `promise`
+
+```ts
+function promise<T>(ctx: IContext): CallbackPromise<T>;
+
+function isCanceled(reason: unknown): boolean;
+```
+
+`promise` also supports an overload which accepts a [context](https://). If the context is cancelable, and the context is canceled before the promise is resolved, then the promise is automatically rejected with a cancellation error.
+
+The helper function `isCanceled` checks a rejection reason or error value to detect if the error represents an automatic cancellation.
+
+#### **Example revisited**: Async queue with cancelable get:
+
+```ts
+class AsyncQueue<T> {
+  readonly #itemQueue: T[] = [];
+  readonly #reqQueue: CallbackPromise<T>[] = [];
+
+  // Await the next value available in the queue
+  get(ctx?: IContext): Promise<T> {
+    if(this.#itemQueue.length > 0) {
+      return Promise.resolve(this.#itemQueue.shift());
+    }
+
+    const p = promise<T>(ctx);
+    this.#reqQueue.push(p);
+
+    const wrapped = p.catch((reason) => {
+      if(isCanceled(reason)) {
+        // Request was canceled. Remove from queue
+        this.#reqQueue.splice(this.#reqQueue.indexOf(p));
+      }
+      throw reason;
+    })
+
+    return wrapped;
+  }
+
+  // Put an item in the queue
+  put(item: T): void {
+    if(this.#reqQueue.length > 0) {
+      this.#reqQueue.shift().resolve(item);
+      return;
+    }
+    this.#itemQueue.push(item);
+  }
+}
+```
+
 ### `later`
 
 ```ts

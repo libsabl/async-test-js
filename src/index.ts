@@ -4,4 +4,3 @@
 
 export { later } from './later';
 export * from './promise';
-export { limit } from './limit';
