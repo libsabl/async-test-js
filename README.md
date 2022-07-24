@@ -19,6 +19,7 @@ See [SETUP.md](./docs/SETUP.md), [CONFIG.md](./docs/CONFIG.md).
 ## API
  
 - [`promise`](#promise)
+- [`limit`](#limit)
 - [`later`](#later)
  
 ### `promise`
@@ -112,6 +113,20 @@ class AsyncQueue<T> {
   }
 }
 ```
+
+### `limit`
+
+```ts
+limit<T>(promise: Promise<T>, ms: number): Promise<T>
+limit<T>(promise: Promise<T>, deadline: Date): Promise<T>
+limit<T>(promise: Promise<T>, ctx: IContext): Promise<T>
+```
+
+`limit` awaits an input promise, but rejects it automatically if it has not completed by a timeout determined by any of the following:
+
+- A relative timeout in milliseconds
+- An absolute `Date` deadline
+- A cancelable context
 
 ### `later`
 
