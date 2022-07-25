@@ -5,13 +5,13 @@
 import { later } from '$';
 
 it('resolves literal value', async () => {
-  const p = Promise.resolve(1);
-  const result = await later(p, 1);
+  const result = await later(1, 1);
   expect(result).toBe(1);
 });
 
 it('resolves literal promise value', async () => {
-  const result = await later(1, 1);
+  const p = Promise.resolve(1);
+  const result = await later(p, 1);
   expect(result).toBe(1);
 });
 
@@ -29,6 +29,30 @@ it('awaits inner promise', async () => {
   const result = await later(() => later(() => 1, 2), 1);
   expect(result).toBe(1);
 });
+
+//
+it('resolves null literal', async () => {
+  const result = await later(null, 1);
+  expect(result).toBe(null);
+});
+
+it('resolves literal promise value', async () => {
+  const p = Promise.resolve();
+  const result = await later(p, 1);
+  expect(result).toBe(undefined);
+});
+
+it('resolves to returned null', async () => {
+  const result = await later(() => null, 1);
+  expect(result).toBe(null);
+});
+
+it('resolves to resolved null promise value', async () => {
+  const result = await later(() => Promise.resolve(), 1);
+  expect(result).toBe(undefined);
+});
+
+//
 
 it('rejects rejected literal promise', async () => {
   const p = Promise.reject('rejected!');

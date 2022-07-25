@@ -21,6 +21,7 @@ See [SETUP.md](./docs/SETUP.md), [CONFIG.md](./docs/CONFIG.md).
 - [`promise`](#promise)
 - [`limit`](#limit)
 - [`later`](#later)
+- [`wait`](#wait)
  
 ### `promise`
 
@@ -199,3 +200,18 @@ const promise = later('hello', 10);
 const result = await promise;
 console.log(result); // hello
 ```
+
+### `wait`
+```ts
+wait<T>(ms: number): Promise<T>
+wait<T>(deadline: Date): Promise<T>
+wait<T>(ctx: IContext): Promise<T>
+``` 
+
+`wait` returns a promise that resolves in the future based on any of the following:
+
+- A relative timeout in milliseconds
+- An absolute `Date` deadline
+- A cancelable context
+
+`wait` resolves immediately for a negative `ms`, a past `deadline`, or a context that is either non-cancelable or is already canceled.

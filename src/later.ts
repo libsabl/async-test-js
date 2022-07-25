@@ -51,6 +51,7 @@ export async function later<T>(
 }
 
 function isPromise<T>(value: T | Promise<T>): value is Promise<T> {
+  if (value == null) return false;
   if (typeof value !== 'object') return false;
   if (!('then' in value)) return false;
   if (!('catch' in value)) return false;
