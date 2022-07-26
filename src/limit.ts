@@ -41,7 +41,7 @@ export async function limit<T>(
     return limitContext(p, limiter);
   }
 
-  if (ms <= 0) {
+  if (ms < 0) {
     return Promise.reject(timeoutError());
   }
 

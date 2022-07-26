@@ -110,15 +110,23 @@ describe('limit', () => {
       expect(await p).toBe(22);
     });
 
-    it('immediately times out with 0 ms', async () => {
+    it('immediately times out with negative ms', async () => {
       const p = Promise.resolve(22);
-      const pLimit = limit(p, 0);
+      const pLimit = limit(p, -1);
 
       // Outer promise rejects with cancellation error
       await expect(pLimit).rejects.toThrow('canceled due to timeout');
 
       // Inner promise still resolves as expected
       expect(await p).toBe(22);
+    });
+
+    it('resolves with timeout 0 but resolved promise', async () => {
+      const p = Promise.resolve(22);
+      const pLimit = limit(p, 0);
+
+      // Inner promise still resolves as expected
+      expect(await pLimit).toBe(22);
     });
 
     it('immediately times out with past deadline', async () => {
