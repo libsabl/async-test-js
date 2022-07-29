@@ -69,14 +69,12 @@ class AsyncQueue<T> {
 ### Cancelable `promise`
 
 ```ts
-function promise<T>(ctx: IContext): CallbackPromise<T>;
-
-function isCanceled(reason: unknown): boolean;
+function promise<T>(ctx: IContext): CallbackPromise<T>; 
 ```
 
-`promise` also supports an overload which accepts a [context](https://). If the context is cancelable, and the context is canceled before the promise is resolved, then the promise is automatically rejected with a cancellation error.
+`promise` also supports an overload which accepts a [context](https://github.com/libsabl/context-js). If the context is cancelable, and the context is canceled before the promise is resolved, then the promise is automatically rejected with a cancellation error.
 
-The helper function `isCanceled` checks a rejection reason or error value to detect if the error represents an automatic cancellation.
+The helper function `CanceledError.is` from [`@sabl/context`](https://npmjs.org/package/@sabl/context) checks a rejection reason or error value to detect if the error represents an automatic cancellation.
 
 #### **Example revisited**: Async queue with cancelable get:
 
@@ -95,7 +93,7 @@ class AsyncQueue<T> {
     this.#reqQueue.push(p);
 
     const wrapped = p.catch((reason) => {
-      if(isCanceled(reason)) {
+      if(CanceledError.is(reason)) {
         // Request was canceled. Remove from queue
         this.#reqQueue.splice(this.#reqQueue.indexOf(p));
       }

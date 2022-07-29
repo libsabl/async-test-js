@@ -173,9 +173,7 @@ describe('get', () => {
     // Cancel in 5 ms
     setTimeout(cancel, 5);
 
-    await expect(pItem2).rejects.toThrow(
-      'canceled before an item was available'
-    );
+    await expect(pItem2).rejects.toThrow('canceled');
 
     // Should no longer be any waiting requests
     expect(pool.stats().waitCount).toBe(0);

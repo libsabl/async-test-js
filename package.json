@@ -1,6 +1,6 @@
 {
   "name": "@sabl/async",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Basic utilities for asynchronous programming",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,7 +30,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@sabl/context": "^1.0.0"
+    "@sabl/context": "^1.1.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.3.0",
