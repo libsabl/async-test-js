@@ -3,7 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@commitlint/cli': ^16.3.0
   '@commitlint/config-conventional': ^16.2.4
-  '@sabl/context': ^1.0.0
+  '@sabl/context': ^1.1.1
   '@types/jest': ^28.1.6
   '@types/node': ^17.0.45
   '@types/rmfr': ^2.0.1
@@ -25,7 +25,7 @@ specifiers:
   typescript: ^4.7.4
 
 dependencies:
-  '@sabl/context': 1.0.0
+  '@sabl/context': 1.1.1
 
 devDependencies:
   '@commitlint/cli': 16.3.0
@@ -734,7 +734,7 @@ packages:
     resolution: {integrity: sha512-/l/VWsdt/aBXgjshLWOFyFt3IVdYypu5y2Wn2rOO1un6nkqIn8SLXzgIMYXFyYsRWDyF5EthmKJMIdJvk08grg==}
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     dependencies:
-      '@sinclair/typebox': 0.24.21
+      '@sinclair/typebox': 0.24.22
     dev: true
 
   /@jest/source-map/28.1.2:
@@ -867,12 +867,12 @@ packages:
       fastq: 1.13.0
     dev: true
 
-  /@sabl/context/1.0.0:
-    resolution: {integrity: sha512-eGU3jk0UXUwzAfs99QhssOBmhhNKKTXsudaFNGMKSODg5wIp9Aj91gG1lfboTOTxdx5gFwJ5RVf2kU4G57dCgw==}
+  /@sabl/context/1.1.1:
+    resolution: {integrity: sha512-CEDOCD+JP/z26Hd9nzfuKR1Jni/eERFhoHut0es6b6NKQCqnLq0/+nNdcBoutjhRGdD8KHaGX1I0PZ9QXa2hsg==}
     dev: false
 
-  /@sinclair/typebox/0.24.21:
-    resolution: {integrity: sha512-II2SIjvxBVJmrGkkZYza/BqNjwx3PWROIA8CZ0/Hn7LV0Mv0CVpZxoyHGBVsQqfFLMv9DmArIeRHTwo76bE6oA==}
+  /@sinclair/typebox/0.24.22:
+    resolution: {integrity: sha512-JsBe3cOFpNZ6yjBYnXKhcENWy5qZE3PQZwExQ5ksA/h8qp4bwwxFmy07A6bC2R6qv6+RF3SfrbQTskTwYNTXUQ==}
     dev: true
 
   /@sinonjs/commons/1.8.3:
@@ -1369,7 +1369,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001373
-      electron-to-chromium: 1.4.204
+      electron-to-chromium: 1.4.206
       node-releases: 2.0.6
       update-browserslist-db: 1.0.5_browserslist@4.21.3
     dev: true
@@ -1653,8 +1653,8 @@ packages:
       is-obj: 2.0.0
     dev: true
 
-  /electron-to-chromium/1.4.204:
-    resolution: {integrity: sha512-5Ojjtw9/c9HCXtMVE6SXVSHSNjmbFOXpKprl6mY/5moLSxLeWatuYA7KTD+RzJMxLRH6yNNQrqGz9p6IoNBMgw==}
+  /electron-to-chromium/1.4.206:
+    resolution: {integrity: sha512-h+Fadt1gIaQ06JaIiyqPsBjJ08fV5Q7md+V8bUvQW/9OvXfL2LRICTz2EcnnCP7QzrFTS6/27MRV6Bl9Yn97zA==}
     dev: true
 
   /emittery/0.10.2:

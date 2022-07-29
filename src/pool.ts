@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 
 import { EventEmitter } from 'events';
-import { IContext } from '@sabl/context';
-import { promise, CallbackPromise, isCanceled } from './promise';
+import { CanceledError, IContext } from '@sabl/context';
+import { promise, CallbackPromise } from './promise';
 
 export interface AsyncFactory<T extends object> {
   /** Create a new item */
@@ -382,11 +382,11 @@ class Pool<T extends object>
 
     // Enqueue the request
     const queue = this.#queue;
-    const handle = promise<T>(ctx!, this.#err.canceled);
+    const handle = promise<T>(ctx!);
     queue.push(handle);
 
     const wrapped = handle.catch((reason) => {
-      if (isCanceled(reason)) {
+      if (CanceledError.is(reason)) {
         // If the request was canceled,
         // remove the request from the queue
         queue.splice(queue.indexOf(handle), 1);

@@ -17,22 +17,6 @@ export interface CallbackPromise<T> extends Promise<T> {
 }
 
 /**
- * Check if the error or promise rejection reason
- * was due to the request being canceled
- */
-export function isCanceled(reason: unknown): boolean {
-  if (reason == null) return false;
-  if (SymErrCanceled in <CanceledError>reason) return true;
-  return false;
-}
-
-const SymErrCanceled = Symbol('ErrCanceled');
-
-type CanceledError = {
-  [SymErrCanceled]: boolean;
-};
-
-/**
  * Create a promise that also exposes its own
  * resolve and reject callbacks
  */
@@ -49,15 +33,9 @@ export function promise<T>(): CallbackPromise<T>;
  * which is used to reject the promise if the context is canceled
  * before the promise is resolved.
  */
-export function promise<T>(
-  ctx: IContext,
-  errCanceled?: () => Error
-): CallbackPromise<T>;
+export function promise<T>(ctx: IContext): CallbackPromise<T>;
 
-export function promise<T>(
-  ctx?: IContext,
-  errCanceled?: () => unknown
-): CallbackPromise<T> {
+export function promise<T>(ctx?: IContext): CallbackPromise<T> {
   let res: FnResolve<T>;
   let rej: FnReject;
 
@@ -80,13 +58,12 @@ export function promise<T>(
   const clr = ctx.canceler;
   if (clr.canceled) {
     // Already canceled. Immediately reject and return
-    const err = cancelErr('Context was already canceled', errCanceled);
-    cbp.reject(err);
+    cbp.reject(clr.err);
     return cbp;
   }
 
   // Handle future possible cancellation
-  const outerPromise = runWithCancel(clr, cbp, errCanceled);
+  const outerPromise = runWithCancel(clr, cbp);
   const outerCbp = <CallbackPromise<T>>outerPromise;
   outerCbp.reject = rej!; // Yes, inner reject
   outerCbp.resolve = res!; // Yes, inner resolve
@@ -95,14 +72,9 @@ export function promise<T>(
 
 async function runWithCancel<T>(
   clr: Canceler,
-  cbp: CallbackPromise<T>,
-  errCanceled?: () => unknown
+  cbp: CallbackPromise<T>
 ): Promise<T> {
-  const onCancel = () => {
-    const err = cancelErr(
-      'Context was canceled before callback resolved',
-      errCanceled
-    );
+  const onCancel = (err: Error) => {
     cbp.reject(err);
   };
 
@@ -112,16 +84,4 @@ async function runWithCancel<T>(
   } finally {
     clr.off(onCancel);
   }
-}
-
-function cancelErr(msg: string, errCanceled?: () => unknown): unknown {
-  let err: unknown = null;
-  if (typeof errCanceled === 'function') {
-    err = errCanceled();
-  }
-  if (err == null) {
-    err = new Error(msg);
-  }
-  (<CanceledError>err)[SymErrCanceled] = true;
-  return err;
 }

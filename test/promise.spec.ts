@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-import { isCanceled, later, promise } from '$';
-import { Canceler, Context } from '@sabl/context';
+import { later, promise } from '$';
+import { CanceledError, Canceler, Context } from '@sabl/context';
 
 describe('promise', () => {
   it('resolves on resolve', async () => {
@@ -67,14 +67,14 @@ describe('promise', () => {
 
       const p = promise<number>(ctx);
 
-      await expect(p).rejects.toThrow('Context was already canceled');
+      await expect(p).rejects.toThrow('canceled');
     });
 
     it('immediately rejects canceled context with custom error', async () => {
       const [ctx, cancel] = Context.cancel();
-      cancel();
+      cancel(new CanceledError('Custom error'));
 
-      const p = promise<number>(ctx, () => new Error('Custom error'));
+      const p = promise<number>(ctx);
 
       await expect(p).rejects.toThrow('Custom error');
     });
@@ -116,10 +116,10 @@ describe('promise', () => {
     it('rejects with custom cancellation error when canceled', async () => {
       const [ctx, cancel] = Context.cancel();
 
-      const p = promise<number>(ctx, () => new Error('Custom error'));
+      const p = promise<number>(ctx);
       const pTest = expect(p).rejects.toThrow('Custom error');
 
-      cancel();
+      cancel(new CanceledError('Custom error'));
 
       await pTest;
     });
@@ -192,140 +192,5 @@ describe('promise', () => {
 
       expect(Canceler.size(ctx.canceler)).toBe(0);
     });
-  });
-});
-
-describe('isCanceled', () => {
-  it('is false for empty values', () => {
-    expect(isCanceled(null)).toBe(false);
-    expect(isCanceled(undefined)).toBe(false);
-  });
-
-  it('is false for custom errors', () => {
-    expect(isCanceled(new Error('canceled'))).toBe(false);
-  });
-
-  it('is true for rejection due to context already canceled', async () => {
-    const [ctx, cancel] = Context.cancel();
-    cancel();
-
-    const p = promise<number>(ctx);
-
-    expect.assertions(1);
-    try {
-      await p;
-    } catch (e) {
-      expect(isCanceled(e)).toBe(true);
-    }
-  });
-
-  it('is true for rejection due to context already canceled with custom error', async () => {
-    const [ctx, cancel] = Context.cancel();
-    cancel();
-
-    const p = promise<number>(ctx, () => new Error('My own error'));
-
-    expect.assertions(1);
-    try {
-      await p;
-    } catch (e) {
-      expect(isCanceled(e)).toBe(true);
-    }
-  });
-
-  it('is true for rejection due to context canceled', async () => {
-    const [ctx, cancel] = Context.cancel();
-
-    const p = promise<number>(ctx);
-
-    expect.assertions(1);
-
-    later(cancel, 10);
-
-    try {
-      await p;
-    } catch (e) {
-      expect(isCanceled(e)).toBe(true);
-    }
-  });
-
-  it('is true for rejection due to context canceled with custom error', async () => {
-    const [ctx, cancel] = Context.cancel();
-
-    const p = promise<number>(ctx, () => new Error('My own error'));
-
-    expect.assertions(1);
-
-    later(cancel, 10);
-
-    try {
-      await p;
-    } catch (e) {
-      expect(isCanceled(e)).toBe(true);
-    }
-  });
-
-  it('works to wrap promise - resolve', async () => {
-    const [ctx, cancel] = Context.cancel();
-
-    const p = promise<number>(ctx);
-
-    let msg = 'initial value';
-
-    const wrapped = p.catch((reason) => {
-      if (isCanceled(reason)) {
-        msg = 'canceled!';
-      }
-      throw reason;
-    });
-
-    p.resolve(1);
-    cancel();
-
-    const result = await wrapped;
-    expect(result).toBe(1);
-    expect(msg).toEqual('initial value');
-  });
-
-  it('works to wrap promise - reject', async () => {
-    const [ctx, cancel] = Context.cancel();
-
-    const p = promise<number>(ctx);
-
-    let msg = 'initial value';
-
-    const wrapped = p.catch((reason) => {
-      if (isCanceled(reason)) {
-        msg = 'canceled!';
-      }
-      throw reason;
-    });
-
-    p.reject('rejected');
-    cancel();
-
-    await expect(wrapped).rejects.toThrow('rejected');
-    expect(msg).toEqual('initial value');
-  });
-
-  it('works to wrap promise - canceled', async () => {
-    const [ctx, cancel] = Context.cancel();
-
-    const p = promise<number>(ctx);
-
-    let msg = 'initial value';
-
-    const wrapped = p.catch((reason) => {
-      if (isCanceled(reason)) {
-        msg = 'canceled!';
-      }
-      throw reason;
-    });
-
-    cancel();
-    p.reject('rejected');
-
-    await expect(wrapped).rejects.toThrow('canceled');
-    expect(msg).toEqual('canceled!');
   });
 });
