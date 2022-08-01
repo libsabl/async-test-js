@@ -23,8 +23,9 @@ See [SETUP.md](./docs/SETUP.md), [CONFIG.md](./docs/CONFIG.md).
 - [`later`](#later)
 - [`wait`](#wait)
 - [`AsyncPool`](#asyncpool)
+- [`Timeline`](#timeline)
  
-### `promise`
+## `promise`
 
 ```ts
 function promise<T>(): CallbackPromise<T>;
@@ -37,7 +38,7 @@ interface CallbackPromise<T> extends Promise<T> {
 
 `promise` returns an actual [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) which also exposes its own `resolve` and `reject` callbacks. This is very helpful for bridging or wrapping event- and callback-based programs to expose APIs as simple Promises that can be `awaited`. In particular, it allows queued requests to be resolved as promises.
 
-#### **Example**: an async queue.
+### **Example**: an async queue.
 
 ```ts
 class AsyncQueue<T> {
@@ -66,7 +67,7 @@ class AsyncQueue<T> {
 }
 ```
 
-### Cancelable `promise`
+## Cancelable `promise`
 
 ```ts
 function promise<T>(ctx: IContext): CallbackPromise<T>; 
@@ -76,7 +77,7 @@ function promise<T>(ctx: IContext): CallbackPromise<T>;
 
 The helper function `CanceledError.is` from [`@sabl/context`](https://npmjs.org/package/@sabl/context) checks a rejection reason or error value to detect if the error represents an automatic cancellation.
 
-#### **Example revisited**: Async queue with cancelable get:
+### **Example revisited**: Async queue with cancelable get:
 
 ```ts
 class AsyncQueue<T> {
@@ -114,7 +115,7 @@ class AsyncQueue<T> {
 }
 ```
 
-### `limit`
+## `limit`
 
 ```ts
 limit<T>(promise: Promise<T>, ms: number): Promise<T>
@@ -130,7 +131,7 @@ limit<T>(promise: Promise<T>, ctx: IContext): Promise<T>
 
 If `ms` is exactly 0, `limit` will resolve only if `promise` itself is already resolved. If `ms` is negative or `deadline` is passed, `limit` will reject even if `promise` is already resolved.
 
-### `later`
+## `later`
 
 ```ts
 later<T>(fn: () => T, ms?: number): Promise<T>
@@ -148,7 +149,7 @@ later<T>(promise: Promise<T>, ms?: number): Promise<T>
 
 Note that if the `ms` timeout is less than or equal to zero, the call will be rejected immediately even if an input promise was already resolved.
  
-#### Synchronous function
+### Synchronous function
 
 With a synchronous function, `later` works identically to `setTimeout` except that it returns a promise. 
 
@@ -171,7 +172,7 @@ const result = await promise;
 console.log(result); // world
 ```
 
-#### Async function
+### Async function
 
 If the value provided to `later` itself returns a promise, then that promise will be awaited before `later` resolves. Note that the callback will not be **started** until the timeout expires, so the total time before the function resolves may be longer than `ms`. If you simply wish to set a timeout for how long an async function may take, use [`limit`](#limit).
 
@@ -181,7 +182,7 @@ const result = await promise;
 console.log(result); // hello
 ```
  
-#### Existing promise
+### Existing promise
 
 An existing promise will be `await` ed after the timeout to resolve the final value. 
 
@@ -192,7 +193,7 @@ const result = await promise;
 console.log(result); // hello
 ```
 
-#### Literal value
+### Literal value
 
 Any value that is not a function or promise will be used as is to resolve the promise after the timeout:
 
@@ -202,7 +203,7 @@ const result = await promise;
 console.log(result); // hello
 ```
 
-### `wait`
+## `wait`
 ```ts
 wait<T>(ms: number): Promise<T>
 wait<T>(deadline: Date): Promise<T>
@@ -217,7 +218,7 @@ wait<T>(ctx: IContext): Promise<T>
 
 `wait` resolves immediately for a negative `ms`, a past `deadline`, or a context that is either non-cancelable or is already canceled.
 
-### `AsyncPool`
+## `AsyncPool`
 
 ```ts
 function createPool<T>(
@@ -266,13 +267,13 @@ Client code should also register an event handler for the returned pool's `error
 
 The promise returned by `close` will not resolve until all items have been released back to the pool, and all items have been destroyed.
 
-#### **FIFO Queue, LIFO Pool**
+### **FIFO Queue, LIFO Pool**
 
 The queue of requests created by calling `get` are first-in-first-out (FIFO): requests will be resolved in the order they were created.
 
 The pool of idled items is intentionally **last-in**-first-out (LIFO). This allows excess pool items to age out and be destroyed.
 
-#### **Options**
+### **Options**
 
 ```ts
 interface PoolOptions { 
@@ -307,7 +308,7 @@ The options and their effect are described here:
 |`maxIdleCount`|The maximum number of items that will be retained in the pool.|Pooled items in excess of the updated `maxIdleCount` are destroyed.|
 |`parallelCreate`|Whether the pool will create multiple items concurrently. **Default is `true`**. If explicitly set to `false`, the pool will `await` each call to the factory's `create` method before invoking it again.|No immediate action|
 
-#### **Stats**
+### **Stats**
 
 Current statistics about the pool can be obtained by calling `stats()`. This will capture the counts at the time of the call.
 
@@ -361,7 +362,7 @@ interface PoolStats {
 }
 ```
 
-#### **Handling errors**
+### **Handling errors**
 
 Errors can occur when the pool invokes the provided factory's `create`, `destroy`, or `reset` methods. Any errors encountered will be emitted by raising an `error` event. Clients should subscribe to this event to ensure errors are not left unhandled.
 
@@ -376,7 +377,7 @@ badPool.on('error', (action, err) => {
 });
 ```
 
-#### **Behavior on error**
+### **Behavior on error**
 
 In all cases, errors thrown by calls to the factory's `create`, `destroy`, or `reset` methods will be caught and emitted with in `error` event. In addition, the pool implements the following behaviors:
 
@@ -392,4 +393,148 @@ In all cases, errors thrown by calls to the factory's `create`, `destroy`, or `r
 
   The item is discarded anyway. Implementations of `destroy` that could throw an error without releasing underlying resources can therefor cause memory leaks. It is the implementer's responsibility to ensure resources are released even if `destroy` throws an error.
 
+
+## `Timeline`
+
+```ts
+export class Timeline {
+  constructor(tickMs?: number);
+
+  get tick(): number;
+  get running(): boolean;
+  get drained(): boolean;
+
+  setTimeout(cb: () => unknown, ticks: number): number;
+  clearTimeout(id: number): boolean;
+  wait(ticks: number): Promise<void>;
+  
+  start(): void;
+  reset(): Promise<void>;
+  next(): Promise<void>;
+  drain(): Promise<void>;
+}
+```
+
+`Timeline` schedules callbacks to be executed in a deterministic order one frame at a time. It designed to set up tests of async programs where the exact order of async events matters. Frame numbers add up intuitively for understandable ordering.
+
+`Timeline`'s `setTimeout` and `clearTimeout` methods are replacements for using the otherwise builtin `setTimeout` and `clearTimeout`, which do not actually guarantee that a callback will be executed after the exact number of ms specified.
+`
+
+### constructor 
+
+```ts
+new Timeline(tickMs?: number) 
+```
+
+The constructor accepts a single options parameter `tickMs`, which determines the number of platform ms to wait before starting the next tick. If null, there is no pause between ticks but the timeline will idle when drained.
+
+If 0 or positive, the platform setTimeout(..., tickMs) will be awaited between ticks, and ticking will continue until the timeline is reset even if there are no callbacks scheduled.
+
+### `tick`
+
+The current tick number.
+
+### `running`
+
+Whether the timeline is running.
+
+### `drained`
+
+`true` if there are no scheduled callbacks
+
+### `setTimeout(fn, ticks = 0)`
+
+Schedule a callback to be executed `ticks` ticks in the future. Can be called from within a callback. Returns an id which can be used to clear the callback.
+
+**If `ticks` is exactly 0**:
+- If timeline has not yet started, callback will be invoked before the first (frame 1) tick
+- If timeline is running, callback will be invoked at the end of the current tick
+- Same-frame scheduling is respected recursively, including for async callbacks
+
+
+### `clearTimeout(id)`
+
+Clear a previously scheduled callback using its `id` value as returned from `setTimeout`.
+
+### `wait(ticks)`
+
+Returns a promise which will be resolved after `ticks` ticks. Useful for succinctly awaiting in tests to let a certain number of frames complete, regardless of how long that takes in real time.
+
+### `start()`
+
+Start the timeline.
+
+- **If `tickMs` provided to constructor is >= 0**
+
+  Timeline will continue ticking indefinitely until `reset()` is called, and will wait `tickMs` milliseconds between ticks using the platform `setTimeout`.
+
+- **If `tickMs` is empty (default)**
+
+  Timeline will cycle without stopping through all scheduled frames. When all callbacks have been cleared or called, the timeline will pause until `setTimeout` is called again.
+
+### `drain()`
+
+Returns a promise which will resolve when all scheduled callbacks have been cleared or executed.
+
+### `reset()`
+
+Cancels and clears all pending callbacks, stops ticking, and resets tick number to 0.
+
+### `next()`
+
+Advance a single tick on a timeline that was never started. Can be used to manually tick forward one frame at a time. Returns a promise which resolves when all callbacks from the frame have been executed, and any promises returned from them have resolved or rejected.
+
+### Example
+
+A contrived example that demonstrates deterministic ordering and additive frame numbers:
+
+
+```ts
+const tl = new Timeline();
+const log: string[] = [];
+const logTick = (msg: string) => log.push(`tick ${tl.tick} : ` + msg);
+
+tl.setTimeout(() => logTick('E @ 3'), 3); 
+
+tl.setTimeout(() => { 
+  tl.setTimeout(() => logTick('G @ 3 + 3 = 6'), 3);
+}, 3);
+
+tl.setTimeout(async () => {
+  logTick('A @ 1');  
+  
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  tl.setTimeout(() => {
+    logTick('B @ 1 + 1 = 2'); 
+
+    tl.setTimeout(() => logTick('F @ 1 + 1 + 3 = 5'), 3);
+    tl.setTimeout(() => logTick('C @ 1 + 1 + 0 = still 2'), 0);
+    tl.setTimeout(() => {
+      tl.setTimeout(() => {
+        tl.setTimeout(() => {
+          logTick('D @ 1 + 1 + 0 + 0 + 0 = *still* 2')
+        }, 0);
+      }, 0);
+    }, 0);
+  }, 1);
+}, 1);
+
+tl.setTimeout(() => logTick('pre-tick @ 0')); // Can omit 0 timeout
+
+tl.start();
+
+await tl.drain();
+
+console.log(log.join('\n'));
+
+// tick 0: pre-tick @ 0
+// tick 1: A @ 1 
+// tick 2: B @ 1 + 1 = 2
+// tick 2: C @ 1 + 1 + 0 = still 2
+// tick 2: D @ 1 + 1 + 0 + 0 + 0 = *still* 2
+// tick 3: E @ 3
+// tick 5: F @ 1 + 1 + 3 = 5
+// tick 6: G @ 3 + 3 = 6
+```
 

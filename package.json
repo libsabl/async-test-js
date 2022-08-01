@@ -1,6 +1,6 @@
 {
   "name": "@sabl/async",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Basic utilities for asynchronous programming",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
