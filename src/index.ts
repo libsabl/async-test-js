@@ -7,3 +7,4 @@ export * from './promise';
 export { limit } from './limit';
 export { wait } from './wait';
 export * from './pool';
+export { Timeline } from './timeline';
