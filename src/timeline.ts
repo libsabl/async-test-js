@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import { isPromise } from 'util/types';
-import { CallbackPromise, promise } from './promise';
+import { CallbackPromise, promise } from '@sabl/async';
 
 type TimelineCallback = () => unknown;
 
