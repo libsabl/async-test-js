@@ -6,7 +6,7 @@
 
 # @sabl/async-test
 
-**async-test** contains several simple utilities for **testing** concurrent or async programs in JavaScript and TypeScript. Several of the utilities use the [context pattern](https://github.com/libsabl/patterns/blob/main/patterns/context.md) implemented in [`@sabl/context`](https://npmjs.com/package/@sabl/context) to implement automatic async cancellation. It builds on [`@sabl/async`](https://github.com/libsabl/async-js), which contains utilities that are useful in both test and production scenarios.
+**async-test** contains several simple utilities for **testing** concurrent or async programs in JavaScript and TypeScript. It builds on [`@sabl/async`](https://github.com/libsabl/async-js), which contains utilities that are useful in both test and production scenarios.
     
 <!-- BEGIN:REMOVE_FOR_NPM -->
 > [**sabl**](https://github.com/libsabl/patterns) is an open-source project to identify, describe, and implement effective software patterns which solve small problems clearly, can be composed to solve big problems, and which work consistently across many programming languages.
@@ -92,21 +92,6 @@ const promise = later('hello', 10);
 const result = await promise;
 console.log(result); // hello
 ```
-
-## `wait`
-```ts
-wait<T>(ms: number): Promise<T>
-wait<T>(deadline: Date): Promise<T>
-wait<T>(ctx: IContext): Promise<T>
-``` 
-
-`wait` returns a promise that resolves in the future based on any of the following:
-
-- A relative timeout in milliseconds
-- An absolute `Date` deadline
-- A cancelable context
-
-`wait` resolves immediately for a negative `ms`, a past `deadline`, or a context that is either non-cancelable or is already canceled.
 
 ## `Timeline`
 
