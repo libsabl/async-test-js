@@ -1,6 +1,6 @@
 <!-- BEGIN:REMOVE_FOR_NPM -->
-[![codecov](https://codecov.io/gh/libsabl/async-js/branch/main/graph/badge.svg?token=TVL1XYSJHA)](https://app.codecov.io/gh/libsabl/async-js/branch/main)
-<span class="badge-npmversion"><a href="https://npmjs.org/package/@sabl/async" title="View this project on NPM"><img src="https://img.shields.io/npm/v/@sabl/async.svg" alt="NPM version" /></a></span>
+[![codecov](https://codecov.io/gh/libsabl/async-test-js/branch/main/graph/badge.svg?token=TVL1XYSJHA)](https://app.codecov.io/gh/libsabl/async-test-js/branch/main)
+<span class="badge-npmversion"><a href="https://npmjs.org/package/@sabl/async-test" title="View this project on NPM"><img src="https://img.shields.io/npm/v/@sabl/async-test.svg" alt="NPM version" /></a></span>
 
 <!-- END:REMOVE_FOR_NPM -->
 
