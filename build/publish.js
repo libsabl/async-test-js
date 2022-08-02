@@ -38,7 +38,7 @@ function removeChunk(source, label) {
 
 async function addReadmeHeaders(source, pkgv) {
   const commit = await gitGetCommit();
-  const codeCovImg = `https://codecov.io/gh/libsabl/async-test-js/commit/${commit}/graph/badge.svg?token=TVL1XYSJHA`;
+  const codeCovImg = `https://codecov.io/gh/libsabl/async-test-js/commit/${commit}/graph/badge.svg?token=ir69SgrKt0`;
   const codeCovPage = `https://codecov.io/gh/libsabl/async-test-js/tree/${commit}/src`;
   const ghBrowse = `https://github.com/libsabl/async-test-js/tree/${commit}`;
   let docsPath = `https://github.com/libsabl/async-test-js/blob/${commit}/docs/DOCS.md`;
