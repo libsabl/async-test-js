@@ -1,7 +1,7 @@
 {
-  "name": "@sabl/async",
-  "version": "0.3.0",
-  "description": "Basic utilities for asynchronous programming",
+  "name": "@sabl/async-test",
+  "version": "0.4.0",
+  "description": "Basic utilities for testing asynchronous programs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -26,11 +26,12 @@
   "keywords": [
     "sabl",
     "async",
-    "promise"
+    "timeline"
   ],
   "license": "MIT",
   "dependencies": {
-    "@sabl/context": "^1.1.1"
+    "@sabl/context": "^1.1.1",
+    "@sabl/async": "^0.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.3.0",

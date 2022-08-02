@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-import { later, limit, Timeline, wait } from '$';
+import { limit, wait } from '@sabl/async';
+import { later, Timeline } from '$';
 
 function makeLog(tl?: Timeline) {
   const msgs: string[] = [];
