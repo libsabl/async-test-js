@@ -1,6 +1,6 @@
 {
   "name": "@sabl/async-test",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Basic utilities for testing asynchronous programs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,7 +30,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@sabl/async": "^0.4.0"
+    "@sabl/async": "^0.5.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.3.0",
@@ -38,8 +38,8 @@
     "@types/jest": "^28.1.6",
     "@types/node": "^17.0.45",
     "@types/rmfr": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.32.0",
-    "@typescript-eslint/parser": "^5.32.0",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
     "chalk": "^4.1.2",
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
